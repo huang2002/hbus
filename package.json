@@ -1,9 +1,9 @@
 {
     "name": "hbus",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "An event bus lib.",
-    "main": "dist/index.umd.min.js",
-    "module": "dist/index.min.js",
+    "main": "dist/hbus.umd.min.js",
+    "module": "dist/hbus.min.js",
     "types": "index.d.ts",
     "scripts": {
         "prebuild": "rd /q /s dist typings raw || exit 0",
