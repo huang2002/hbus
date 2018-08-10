@@ -1,0 +1,52 @@
+{
+    "name": "hbus",
+    "version": "0.1.0",
+    "description": "An event bus lib.",
+    "main": "dist/index.umd.min.js",
+    "module": "dist/index.min.js",
+    "types": "index.d.ts",
+    "scripts": {
+        "prebuild": "rd /q /s dist typings raw || exit 0",
+        "build": "tsc && rollup -c",
+        "postbuild": "terser dist/hbus.js --config-file terser.json --module -o dist/hbus.min.js && terser dist/hbus.umd.js --config-file terser.json --toplevel -o dist/hbus.umd.min.js",
+        "test": "node ./test/test.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/huang2002/hbus.git"
+    },
+    "keywords": [
+        "hbus",
+        "event",
+        "bus",
+        "state",
+        "publish",
+        "dispatch",
+        "subscribe",
+        "subscription",
+        "3h"
+    ],
+    "author": "3h",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/huang2002/hbus/issues"
+    },
+    "homepage": "https://github.com/huang2002/hbus#readme",
+    "files": [
+        "dist",
+        "typings",
+        "index.d.ts",
+        "LICENSE",
+        "README.md",
+        "CHANGELOG.md"
+    ],
+    "devDependencies": {
+        "babel-core": "^6.26.3",
+        "babel-plugin-external-helpers": "^6.22.0",
+        "babel-preset-env": "^1.7.0",
+        "rollup": "^0.64.1",
+        "rollup-plugin-babel": "^3.0.7",
+        "terser": "^3.8.1",
+        "typescript": "^3.0.1"
+    }
+}
