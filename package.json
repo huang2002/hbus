@@ -1,6 +1,6 @@
 {
     "name": "hbus",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "An event bus lib.",
     "main": "dist/hbus.umd.min.js",
     "module": "dist/hbus.min.js",
@@ -8,7 +8,7 @@
     "scripts": {
         "prebuild": "rd /q /s dist typings raw || exit 0",
         "build": "tsc && rollup -c",
-        "postbuild": "terser dist/hbus.js --config-file terser.json --module -o dist/hbus.min.js && terser dist/hbus.umd.js --config-file terser.json --toplevel -o dist/hbus.umd.min.js",
+        "postbuild": "terser dist/hbus.js --config-file terser.json --module -o dist/hbus.min.js && terser dist/hbus.umd.js --config-file terser.json -o dist/hbus.umd.min.js",
         "test": "node ./test/test.js"
     },
     "repository": {
