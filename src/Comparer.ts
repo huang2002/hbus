@@ -1,27 +1,27 @@
 
-export type Comparer = (oldStates: any, newStates: any) => boolean;
+export type Comparer = (oldState: any, newState: any) => boolean;
 
-export const defaultComparer: Comparer = (oldStates, newStates) => {
+export const defaultComparer: Comparer = (oldState, newState) => {
 
     if (
-        oldStates === newStates && String(oldStates) === String(newStates) ||
-        oldStates !== oldStates && newStates !== newStates
+        oldState === newState && String(oldState) === String(newState) ||
+        oldState !== oldState && newState !== newState
     ) {
         return true;
     } else {
 
-        if (!(oldStates instanceof Object && newStates instanceof Object)) {
+        if (!(oldState instanceof Object && newState instanceof Object)) {
             return false;
         }
 
-        for (const oldKey in oldStates) {
-            if (!(oldKey in newStates && defaultComparer(oldStates[oldKey], newStates[oldKey]))) {
+        for (const oldKey in oldState) {
+            if (!(oldKey in newState && defaultComparer(oldState[oldKey], newState[oldKey]))) {
                 return false;
             }
         }
 
-        for (const newKey in newStates) {
-            if (!(newKey in oldStates)) {
+        for (const newKey in newState) {
+            if (!(newKey in oldState)) {
                 return false;
             }
         }

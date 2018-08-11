@@ -2,7 +2,7 @@
 
 An event bus lib.
 
-This lib helps you deal with the states of your application. Define an action processor, then publish actions anywhere and subscribe to the changes of states or even specified properties.
+This lib helps you deal with the state of your application. Define an action processor, then publish actions anywhere and subscribe to the changes of state or even specified properties.
 
 # Example
 
@@ -12,14 +12,14 @@ import { Bus } from "hbus";
 // or a umd module:
 const { Bus } = HBus;
 // Define a processor:
-function processor(states, action) {
+function processor(state, action) {
     // ...
-    return changedStates;
+    return changedProps;
 }
 // Create a bus:
 const bus = new Bus(processor);
-// Subscribe to any changes on states:
-bus.subscribe(states => {
+// Subscribe to any changes on state:
+bus.subscribe(state => {
     // ...
 }).subscribeProp('someProp', prop => {
     // ...
@@ -63,15 +63,15 @@ An `action` is just an object(, so please note that there's **no** `HBus.Action`
 ## Bus
 
 ```ts
-new HBus.Bus(processor, defaultStates?);
+new HBus.Bus(processor, defaultState?);
 ```
 
-This is the bus constructor. You need to pass an action processor to it and you can pass the default states.
+This is the bus constructor. You need to pass an action processor to it and you can pass the default state.
 
 ### processor
 
 ```js
-bus.processor(states, action);
+bus.processor(state, action);
 ```
 
 The `processor` handles the actions and tells what changes.
@@ -79,10 +79,10 @@ The `processor` handles the actions and tells what changes.
 For instance:
 
 ```js
-function processor(states, action) {
+function processor(state, action) {
     if (action.type === 'INC_A') {
         // You only need to return what changes:
-        return { a: states.a + 1 };
+        return { a: state.a + 1 };
     } else {
         return {}; // (no change)
     }
@@ -92,39 +92,39 @@ function processor(states, action) {
 ### comparer
 
 ```js
-bus.comparer(oldStates, newStates);
+bus.comparer(oldState, newState);
 ```
 
-The `comparer` compares the two states and tells whether they are the same. If it returns true than `bus` will think that there's no changes and no subscribers will be called. By default, it is set to `HBus.defaultComparer` which returns whether the two states are deeply equal(e.g. `{ a: { b: NaN } }` equals `{ a: { b: NaN } }`, but it doesn't equal `{ a: { b: NaN, c: undefined } }`). You can set a custom one if needed.
+The `comparer` compares the two states and tells whether they are the same. If it returns true than `bus` will think that there's no changes and no subscribers will be called. By default, it is set to `HBus.defaultComparer` which returns whether the two state are deeply equal(e.g. `{ a: { b: NaN } }` equals `{ a: { b: NaN } }`, but it doesn't equal `{ a: { b: NaN, c: undefined } }`). You can set a custom one if needed.
 
-### getStates
+### getState
 
 ```js
-bus.getStates();
+bus.getState();
 ```
 
-This method returns the current states. Please note that states are updated **asynchronously**, so use [`requestStates`](#requeststates) if you need states that may be changed next tick.
+This method returns the current state. Please note that the state are updated **asynchronously**, so use [`requestState`](#requeststate) if you need the state that may be changed next tick.
 
-### requestStates
+### requestState
 
 ```js
-bus.requestStates(callback);
+bus.requestState(callback);
 ```
 
-The `callback` will be called next tick and receive newer states. To improve the performance, actions are processed asynchronously. So:
+The `callback` will be called next tick and receive newer state. To improve the performance, actions are processed asynchronously. So:
 
 ```js
 // An action is published here:
 bus.publish({ type: 'FOO_BAR' });
 // This doesn't work correctly because
 // the action hasn't been processed
-// and states haven't been updated:
-console.log(bus.getStates());
+// and state hasn't been updated:
+console.log(bus.getState());
 // This will work correctly because
 // the callback will be called at
 // the right time:
-bus.requestStates(newerStates => {
-    console.log(newerStates);
+bus.requestState(newerState => {
+    console.log(newerState);
 });
 ```
 
@@ -142,7 +142,7 @@ Call this method to publish an action.
 bus.subscribe(subscriber);
 ```
 
-You can call this method to subscribe to all changes on states.
+You can call this method to subscribe to all changes on the state.
 
 ### unsubscribe
 
@@ -166,7 +166,7 @@ This method clears the subscribers registed by [`subscribe`](#subscribe).
 bus.subscribeProp(propName, subscriber);
 ```
 
-You can use this to subscribe to a property of the states. The `subscriber` will only receive the specified property instead of the whole states.
+You can use this to subscribe to changes on a property of the state. The `subscriber` will only receive the specified property instead of the whole state.
 
 ### unsubscribeProp
 
@@ -231,17 +231,17 @@ For example:
 
 ```js
 const combinedProcessor = HBus.createProcessor({
-    foo(states, action) {
+    foo(state, action) {
         // Return sth. according to foo action...
     },
-    bar(states, action) {
+    bar(state, action) {
         // Return sth. according to bar action...
     }
-}, (states, action) => {
+}, (state, action) => {
     // Return sth. according to other actions...
 });
 // The above is similar to the following:
-const combinedProcessor = (states, action) => {
+const combinedProcessor = (state, action) => {
     switch (action.type) {
         case 'foo':
             // Return sth. according to foo action...

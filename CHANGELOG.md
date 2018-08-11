@@ -1,3 +1,7 @@
+## 0.2.0 - 2018-08-11
+
+- Rename states state
+
 ### 0.1.2 - 2018-08-10
 
 - Fix terser options

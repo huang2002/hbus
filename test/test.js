@@ -22,11 +22,11 @@ if (typeof document !== 'undefined') {
 
 const bus = new HBus.Bus(
     HBus.createProcessor({
-        A: (states, { by = 1 }) => ({ a: states.a + by }),
-        B: (states, { by }) => ({ b: states.b + by })
-    }, (states, action) => {
+        A: (state, { by = 1 }) => ({ a: state.a + by }),
+        B: (state, { by }) => ({ b: state.b + by })
+    }, (state, action) => {
         log('Unknown action:', action);
-        return states;
+        return state;
     }), {
         a: 0,
         b: 0
@@ -57,7 +57,7 @@ bus.publish({
     type: 'C'
 });
 
-log('Current states:', bus.getStates());
-bus.requestStates(states => {
-    log('Current states', states);
+log('Current state:', bus.getState());
+bus.requestState(state => {
+    log('Current state', state);
 });

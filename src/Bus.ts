@@ -3,23 +3,23 @@ import { Processor } from "./Processor";
 import { ticker } from "./Ticker";
 import { Comparer, defaultComparer } from "./Comparer";
 
-export type Subscriber<S = any> = (states: S) => void;
+export type Subscriber<S = any> = (state: S) => void;
 
-export type StatesRequestCallback<S = any> = (states: S) => void;
+export type StateRequestCallback<S = any> = (state: S) => void;
 
 export class Bus<S = any, T = any, A extends Action<T> = Action<T>> {
 
     constructor(
         public processor: Processor<S, A>,
-        defaultStates?: S
+        defaultState?: S
     ) {
-        this._states = defaultStates || ({} as S);
+        this._state = defaultState || ({} as S);
     }
 
     comparer: Comparer = defaultComparer;
 
-    private _states: S;
-    private _statesRequestCallbacks = new Array<StatesRequestCallback<S>>();
+    private _state: S;
+    private _stateRequestCallbacks = new Array<StateRequestCallback<S>>();
     private _willUpdate = false;
     private _actions = new Array<A>();
     private _subscriberMap = new Map<keyof S, Subscriber[]>();
@@ -31,46 +31,46 @@ export class Bus<S = any, T = any, A extends Action<T> = Action<T>> {
             ticker.tick(() => {
                 this._willUpdate = false;
                 this._update();
-                const { _statesRequestCallbacks, _states } = this;
-                _statesRequestCallbacks.forEach(callback => {
-                    callback(_states);
+                const { _stateRequestCallbacks, _state } = this;
+                _stateRequestCallbacks.forEach(callback => {
+                    callback(_state);
                 });
-                _statesRequestCallbacks.length = 0;
+                _stateRequestCallbacks.length = 0;
             });
         }
     }
 
     private _update() {
-        const { processor, comparer, _states, _actions, _subscriberMap } = this,
-            oldStates = Object.assign({}, _states),
-            states = this._states = _actions.reduce(
-                (states, action) => Object.assign(states, processor(states, action)),
-                _states
+        const { processor, comparer, _state, _actions, _subscriberMap } = this,
+            oldState = Object.assign({}, _state),
+            state = this._state = _actions.reduce(
+                (state, action) => Object.assign(state, processor(state, action)),
+                _state
             );
         let hasChanged = false;
         _subscriberMap.forEach((subscribers, propName) => {
-            const prop = states[propName];
-            if (!comparer(prop, oldStates[propName])) {
+            const prop = state[propName];
+            if (!comparer(prop, oldState[propName])) {
                 hasChanged = true;
                 subscribers.forEach(subscriber => {
                     subscriber(prop);
                 });
             }
         });
-        if (hasChanged || !comparer(oldStates, states)) {
+        if (hasChanged || !comparer(oldState, state)) {
             this._subscribers.forEach(subscriber => {
-                subscriber(states);
+                subscriber(state);
             });
         }
         _actions.length = 0;
     }
 
-    getStates() {
-        return this._states;
+    getState() {
+        return this._state;
     }
 
-    requestStates(callback: StatesRequestCallback<S>) {
-        this._statesRequestCallbacks.push(callback);
+    requestState(callback: StateRequestCallback<S>) {
+        this._stateRequestCallbacks.push(callback);
         this._requestUdpate();
         return this;
     }
