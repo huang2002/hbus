@@ -25,7 +25,7 @@ const bus = new HBus.Bus(
         A: (state, { by = 1 }) => ({ a: state.a + by }),
         B: (state, { by }) => ({ b: state.b + by })
     }, (state, action) => {
-        log('Unknown action:', action);
+        log('Unknown action: ', action);
         return state;
     }), {
         a: 0,
@@ -35,29 +35,29 @@ const bus = new HBus.Bus(
 
 const A = HBus.createActionFactory('A');
 
-bus.subscribe(action => {
-    log('Action:', action);
-}).subscribeType('A', action => {
-    log('Action on A:', action);
-}).subscribeType('B', () => {
+bus.subscribe(state => {
+    log('state: ', state);
+}).subscribeProp('a', a => {
+    log('state.a: ', a);
+}).subscribeProp('b', () => {
     log('This subscriber should be removed!');
-}).clearSubscribersOfType('B');
+}).clearPropSubscribers('b');
 
-log('Publish action on A.');
+log('Publish action A.');
 bus.publish(A());
 
-log('Publish action on B.');
+log('Publish action B.');
 bus.publish({
     type: 'B',
     by: 2
 });
 
-log('Publish action on C.');
+log('Publish action C.');
 bus.publish({
     type: 'C'
 });
 
 log('Current state:', bus.getState());
 bus.requestState(state => {
-    log('Current state', state);
+    log('Current state: ', state);
 });
