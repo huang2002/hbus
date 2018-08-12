@@ -1,6 +1,6 @@
 import { Action } from "./Action";
 
-export type Processor<S = any, A = Action> = (oldState: S, action: A) => Partial<S>;
+export type Processor<S = any, A = Action> = (state: S, action: A) => S | void;
 
 export interface ProcessorMap<S = any, A extends Action = Action> {
     [type: string]: Processor<S, A>;

@@ -14,21 +14,26 @@ const { Bus } = HBus;
 // Define a processor:
 function processor(state, action) {
     // ...
-    return changedProps;
 }
+// Initialize state:
+const defaultState = { foo: 'bar' };
 // Create a bus:
-const bus = new Bus(processor);
-// Subscribe to any changes on state:
+const bus = new Bus(processor, defaultState);
+// Subscribe to changes:
 bus.subscribe(state => {
     // ...
-}).subscribeProp('someProp', prop => {
+}).subscribeProp('foo', prop => {
     // ...
 });
 // Publish an action:
-bus.publish({
-    type: 'SOME_ACTION_TYPE',
-    // Custom data...
-});
+bus.publish(
+    new HBus.Action(
+        'SOME_ACTION_TYPE',
+        {
+            // Custom payload... 
+        }
+    )
+);
 ```
 
 # Usage
@@ -49,16 +54,24 @@ Load from [unpkg.com](https://unpkg.com/):
 
 ## Action
 
-An `action` is just an object(, so please note that there's **no** `HBus.Action`.). Only a `type` property is required for each action, and any other custom properties are up to you.
+```ts
+new HBus.Action(type, payload?);
+```
+
+A `type` is required for an `action` and custom data can be stored as `payload`.
+
+An `action` object is just like this:
 
 ```js
-// This is an valid action:
 {
-    type: 'LOGIN',
-    name: 'foo',
-    password: 'bar'
+    type: 'SOME_ACTION_TYPE',
+    payload: {
+        foo: 'bar'
+    }
 }
 ```
+
+So, you can also use a javascript object as an `action`, e.g. `{ type: 'FOO', payload: 'bar' }`.
 
 ## Bus
 
@@ -74,17 +87,41 @@ This is the bus constructor. You need to pass an action processor to it and you 
 bus.processor(state, action);
 ```
 
-The `processor` handles the actions and tells what changes.
+The `processor` handles the actions and updates the `state`.
 
 For instance:
 
 ```js
 function processor(state, action) {
-    if (action.type === 'INC_A') {
-        // You only need to return what changes:
-        return { a: state.a + 1 };
-    } else {
-        return {}; // (no change)
+    switch (action.type) {
+        case 'INC_A':
+            // You can change the properties
+            // on the `state` directly: 
+            // (In fact, it is a shallow
+            // copy. So, `state.a++` works
+            // correctly, but `state.b.c++`
+            // doesn't because it will
+            // change the original state
+            // and leads to a bug.)
+            state.a++;
+            break;
+        case 'INC_B':
+            // If you want to change deep
+            // properties or replace the
+            // `state`, just return a new
+            // `state` like this: (Do
+            // not forget to copy other
+            // properties if there're any.)
+            return {
+                // ...state,
+                b: {
+                    // ...state.b,
+                    c: state.b.c + 1
+                }
+            };
+        default:
+            // ...
+            break;
     }
 }
 ```
@@ -166,7 +203,7 @@ This method clears the subscribers registed by [`subscribe`](#subscribe).
 bus.subscribeProp(propName, subscriber);
 ```
 
-You can use this to subscribe to changes on a property of the state. The `subscriber` will only receive the specified property instead of the whole state.
+You can use this to subscribe to changes on a property of the state. The `subscriber` will only receive the specified property instead of the entire state.
 
 ### unsubscribeProp
 
@@ -203,10 +240,10 @@ Call this method to clear all the subscribers.
 ## createActionFactory
 
 ```ts
-HBus.createActionFactory(type, defaultData?);
+HBus.createActionFactory(type, defaultPayload?);
 ```
 
-This method returns an action factory which receives some data and returns an action of a specified type. You can also pass some default data to it.
+This method returns an action factory which receives some data as payload and returns an action of a specified type. You can also pass the default payload to it.
 
 ```js
 // Create an action factory for action A:
@@ -216,7 +253,7 @@ const actionA = HBus.createActionFactory('A', {
 });
 // Use it like this:
 bus.publish(actionA({ foo: 'bar' }));
-// (equals) bus.publish({ type: 'A', foo: 'bar', hello: 'world' });
+// (equals) bus.publish({ type: 'A', payload: { foo: 'bar', hello: 'world' } });
 ```
 
 ## createProcessor
@@ -232,23 +269,26 @@ For example:
 ```js
 const combinedProcessor = HBus.createProcessor({
     foo(state, action) {
-        // Return sth. according to foo action...
+        // Do sth. to `state` or return a new one.
     },
     bar(state, action) {
-        // Return sth. according to bar action...
+        // Do sth. to `state` or return a new one.
     }
 }, (state, action) => {
-    // Return sth. according to other actions...
+    // Do sth. to `state` or return a new one.
 });
 // The above is similar to the following:
 const combinedProcessor = (state, action) => {
     switch (action.type) {
         case 'foo':
-            // Return sth. according to foo action...
+            // Do sth. to `state` or return a new one.
+            break;
         case 'bar':
-            // Return sth. according to bar action...
+            // Do sth. to `state` or return a new one.
+            break;
         default:
-            // Return sth. according to other actions...
+            // Do sth. to `state` or return a new one.
+            break;
     }
 };
 ```

@@ -1,4 +1,6 @@
-export const defaultTickMethod = (callback: () => void) => {
+export type TickCallback = () => void;
+
+export const defaultTickMethod = (callback: TickCallback) => {
     requestAnimationFrame(callback);
 };
 
@@ -7,9 +9,9 @@ export class Ticker {
     tickMethod = defaultTickMethod;
 
     private _willTick = false;
-    private _callbacks = new Array<() => void>();
+    private _callbacks = new Array<TickCallback>();
 
-    tick(callback: () => void) {
+    tick(callback: TickCallback) {
         this._callbacks.push(callback);
         if (!this._willTick) {
             this._willTick = true;

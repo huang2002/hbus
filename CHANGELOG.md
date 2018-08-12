@@ -1,3 +1,8 @@
+## 0.3.0 - 2018-08-12
+
+- Add `Action`
+- Move custom data into `payload`
+
 ## 0.2.0 - 2018-08-11
 
 - Rename states state

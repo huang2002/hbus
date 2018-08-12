@@ -1,11 +1,14 @@
-export interface ActionData {
-    [data: string]: any;
+export class Action<T = any, P = any> {
+    constructor(
+        public readonly type: T,
+        public readonly payload?: Readonly<P>
+    ) { }
 }
 
-export type Action<T = any, D extends ActionData = ActionData> = D & { type: T };
+export type ActionFactory<T, P = any> = (payload?: P) => Action<T, P>;
 
-export type ActionFactory<T, D = any> = (data?: D) => Action<T, D>;
-
-export function createActionFactory<T, D = any, DD extends Partial<D> = Partial<D>>(type: T, defaultData?: DD): ActionFactory<T, D> {
-    return (data?: D) => Object.assign({ type }, defaultData, data);
+export function createActionFactory<T, P = any, DP extends Partial<P> = Partial<P>>(
+    type: T, defaultPayload?: DP
+): ActionFactory<T, P> {
+    return (payload?: P) => ({ type, payload: Object.assign({}, defaultPayload, payload) });
 }

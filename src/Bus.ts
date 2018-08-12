@@ -7,13 +7,13 @@ export type Subscriber<S = any> = (state: S) => void;
 
 export type StateRequestCallback<S = any> = (state: S) => void;
 
-export class Bus<S = any, T = any, A extends Action<T> = Action<T>> {
+export class Bus<S = any, T = any, P = any> {
 
     constructor(
-        public processor: Processor<S, A>,
-        defaultState?: S
+        public processor: Processor<S, Action<T, P>>,
+        defaultState: S = {} as S
     ) {
-        this._state = defaultState || ({} as S);
+        this._state = defaultState;
     }
 
     comparer: Comparer = defaultComparer;
@@ -21,7 +21,7 @@ export class Bus<S = any, T = any, A extends Action<T> = Action<T>> {
     private _state: S;
     private _stateRequestCallbacks = new Array<StateRequestCallback<S>>();
     private _willUpdate = false;
-    private _actions = new Array<A>();
+    private _actions = new Array<Action<T, P>>();
     private _subscriberMap = new Map<keyof S, Subscriber[]>();
     private _subscribers = new Array<Subscriber<S>>();
 
@@ -42,11 +42,17 @@ export class Bus<S = any, T = any, A extends Action<T> = Action<T>> {
 
     private _update() {
         const { processor, comparer, _state, _actions, _subscriberMap } = this,
-            oldState = Object.assign({}, _state),
-            state = this._state = _actions.reduce(
-                (state, action) => Object.assign(state, processor(state, action)),
-                _state
-            );
+            oldState = Object.assign({}, _state);
+        let state = _state,
+            t;
+        _actions.forEach(action => {
+            t = processor(state, action);
+            if (t !== undefined) {
+                state = t;
+            }
+        });
+        _actions.length = 0;
+        this._state = state;
         let hasChanged = false;
         _subscriberMap.forEach((subscribers, propName) => {
             const prop = state[propName];
@@ -62,7 +68,6 @@ export class Bus<S = any, T = any, A extends Action<T> = Action<T>> {
                 subscriber(state);
             });
         }
-        _actions.length = 0;
     }
 
     getState() {
@@ -75,7 +80,7 @@ export class Bus<S = any, T = any, A extends Action<T> = Action<T>> {
         return this;
     }
 
-    publish(action: A) {
+    publish(action: Action<T, P>) {
         this._actions.push(action);
         this._requestUdpate();
         return this;
