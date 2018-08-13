@@ -4,20 +4,20 @@ export const defaultTickMethod = (callback: TickCallback) => {
     requestAnimationFrame(callback);
 };
 
-export class Ticker {
+export const ticker = {
 
-    tickMethod = defaultTickMethod;
+    tickMethod: defaultTickMethod,
 
-    private _willTick = false;
-    private _callbacks = new Array<TickCallback>();
+    _willTick: false,
+    _callbacks: new Array<TickCallback>(),
 
     tick(callback: TickCallback) {
-        this._callbacks.push(callback);
-        if (!this._willTick) {
-            this._willTick = true;
-            this.tickMethod(() => {
-                this._willTick = false;
-                const { _callbacks } = this;
+        ticker._callbacks.push(callback);
+        if (!ticker._willTick) {
+            ticker._willTick = true;
+            ticker.tickMethod(() => {
+                ticker._willTick = false;
+                const { _callbacks } = ticker;
                 _callbacks.forEach(cb => {
                     cb();
                 });
@@ -27,5 +27,3 @@ export class Ticker {
     }
 
 }
-
-export const ticker = new Ticker();

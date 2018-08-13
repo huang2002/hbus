@@ -1,3 +1,7 @@
+### 0.3.2 - 2018-08-13
+
+- Improve some internals
+
 ### 0.3.1 - 2018-08-12
 
 - Improve CHANGELOG.md

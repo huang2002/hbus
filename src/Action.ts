@@ -5,10 +5,10 @@ export class Action<T = any, P = any> {
     ) { }
 }
 
-export type ActionFactory<T, P = any> = (payload?: P) => Action<T, P>;
+export type ActionFactory<T = any, P = any> = (payload?: P) => Action<T, P>;
 
 export function createActionFactory<T, P = any, DP extends Partial<P> = Partial<P>>(
     type: T, defaultPayload?: DP
 ): ActionFactory<T, P> {
-    return (payload?: P) => ({ type, payload: Object.assign({}, defaultPayload, payload) });
+    return (payload?: P) => new Action(type, Object.assign({}, defaultPayload, payload));
 }
