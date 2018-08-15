@@ -83,8 +83,8 @@ This is the bus constructor. You need to pass an action processor to it and you 
 
 ### processor
 
-```js
-bus.processor(state, action);
+```ts
+bus.processor(state, action): void | State;
 ```
 
 The `processor` handles the actions and updates the `state`.
@@ -128,24 +128,24 @@ function processor(state, action) {
 
 ### comparer
 
-```js
-bus.comparer(oldState, newState);
+```ts
+bus.comparer(oldState, newState): boolean;
 ```
 
 The `comparer` compares the two states and tells whether they are the same. If it returns true than `bus` will think that there's no changes and no subscribers will be called. By default, it is set to `HBus.defaultComparer` which returns whether the two state are deeply equal(e.g. `{ a: { b: NaN } }` equals `{ a: { b: NaN } }`, but it doesn't equal `{ a: { b: NaN, c: undefined } }`). You can set a custom one if needed.
 
 ### getState
 
-```js
-bus.getState();
+```ts
+bus.getState(): State;
 ```
 
 This method returns the current state. Please note that the state are updated **asynchronously**, so use [`requestState`](#requeststate) if you need the state that may be changed next tick.
 
 ### requestState
 
-```js
-bus.requestState(callback);
+```ts
+bus.requestState(callback): this;
 ```
 
 The `callback` will be called next tick and receive newer state. To improve the performance, actions are processed asynchronously. So:
@@ -167,72 +167,72 @@ bus.requestState(newerState => {
 
 ### publish
 
-```js
-bus.publish(action);
+```ts
+bus.publish(action): this;
 ```
 
 Call this method to publish an action.
 
 ### subscribe
 
-```js
-bus.subscribe(subscriber);
+```ts
+bus.subscribe(subscriber): this;
 ```
 
 You can call this method to subscribe to all changes on the state.
 
 ### unsubscribe
 
-```js
-bus.unsubscribe(subscriber);
+```ts
+bus.unsubscribe(subscriber): this;
 ```
 
 You can call this method to remove a subscriber.
 
 ### clearSubscribers
 
-```js
-bus.clearSubscribers();
+```ts
+bus.clearSubscribers(): this;
 ```
 
 This method clears the subscribers registed by [`subscribe`](#subscribe).
 
 ### subscribeProp
 
-```js
-bus.subscribeProp(propName, subscriber);
+```ts
+bus.subscribeProp(propName, subscriber): this;
 ```
 
 You can use this to subscribe to changes on a property of the state. The `subscriber` will only receive the specified property instead of the entire state.
 
 ### unsubscribeProp
 
-```js
-bus.unsubscribeProp(propName, subscriber);
+```ts
+bus.unsubscribeProp(propName, subscriber): this;
 ```
 
 Call this to remove a property subscriber.
 
 ### clearPropSubscribers
 
-```js
-bus.clearPropSubscribers(propName);
+```ts
+bus.clearPropSubscribers(propName): this;
 ```
 
 This method clears all the subscribers to a specified property.
 
 ### clearAllPropSubscribers
 
-```js
-bus.clearAllPropSubscribers();
+```ts
+bus.clearAllPropSubscribers(): this;
 ```
 
 This method clears all the property subscribers.
 
 ### clearAllSubscribers
 
-```js
-bus.clearAllSubscribers();
+```ts
+bus.clearAllSubscribers(): this;
 ```
 
 Call this method to clear all the subscribers.
@@ -240,7 +240,7 @@ Call this method to clear all the subscribers.
 ## createActionFactory
 
 ```ts
-HBus.createActionFactory(type, defaultPayload?);
+HBus.createActionFactory(type, defaultPayload?): ActionFactory;
 ```
 
 This method returns an action factory which receives some data as payload and returns an action of a specified type. You can also pass the default payload to it.
@@ -259,7 +259,7 @@ bus.publish(actionA({ foo: 'bar' }));
 ## createProcessor
 
 ```ts
-HBus.createProcessor(processorMap, defaultProcessor?);
+HBus.createProcessor(processorMap, defaultProcessor?): Processor;
 ```
 
 This is a utility method that helps you create a processor. You need to pass an object to it. Each pair of the object stands for an action type and a processor for it. You can also pass a default processor which handles the actions whose types are not in `processorMap`.
@@ -303,8 +303,8 @@ The `ticker` receives update requests from buses internally and handles them eve
 
 ### tickMethod
 
-```js
-HBus.ticker.tickMethod(callback);
+```ts
+HBus.ticker.tickMethod(callback): void;
 ```
 
 This method handles the `callback` and is used internally. By default, it is set to `HBus.defaultTickMethod` which directly pass the `callback` to `requestAnimationFrame`. You can set your custom one if needed.

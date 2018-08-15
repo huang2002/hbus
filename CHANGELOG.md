@@ -1,10 +1,12 @@
 ### 0.3.2 - 2018-08-13
 
 - Improve some internals
+- Improve `README.md`
+- Improve `CHANGELOG.md`
 
 ### 0.3.1 - 2018-08-12
 
-- Improve CHANGELOG.md
+- Improve `CHANGELOG.md`
 
 ## 0.3.0 - 2018-08-12
 
@@ -17,7 +19,7 @@
 
 ### 0.1.2 - 2018-08-10
 
-- Fix terser options
+- Fix `terser` options
 
 ### 0.1.1 - 2018-08-10
 
