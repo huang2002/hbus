@@ -1,6 +1,6 @@
 {
     "name": "hbus",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "description": "An event bus lib.",
     "main": "dist/hbus.umd.min.js",
     "module": "dist/hbus.min.js",

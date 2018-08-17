@@ -1,3 +1,7 @@
+### 0.3.4 - 2018-08-17
+
+- Improve non-object payload handling
+
 ### 0.3.3 - 2018-08-17
 
 - Fix a bug in updating
