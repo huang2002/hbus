@@ -1,3 +1,7 @@
+### 0.3.3 - 2018-08-17
+
+- Fix a bug in updating
+
 ### 0.3.2 - 2018-08-13
 
 - Improve some internals

@@ -42,20 +42,20 @@ export class Bus<S = any, T = any, P = any> {
 
     private _update() {
         const { processor, comparer, _state, _actions, _subscriberMap } = this,
-            oldState = Object.assign({}, _state);
-        let state = _state,
+            oldState = _state;
+        let newState = _state instanceof Object ? Object.assign({}, _state) : _state,
             t;
         _actions.forEach(action => {
-            t = processor(state, action);
+            t = processor(newState, action);
             if (t !== undefined) {
-                state = t;
+                newState = t;
             }
         });
         _actions.length = 0;
-        this._state = state;
+        this._state = newState;
         let hasChanged = false;
         _subscriberMap.forEach((subscribers, propName) => {
-            const prop = state[propName];
+            const prop = newState[propName];
             if (!comparer(prop, oldState[propName])) {
                 hasChanged = true;
                 subscribers.forEach(subscriber => {
@@ -63,9 +63,9 @@ export class Bus<S = any, T = any, P = any> {
                 });
             }
         });
-        if (hasChanged || !comparer(oldState, state)) {
+        if (hasChanged || !comparer(oldState, newState)) {
             this._subscribers.forEach(subscriber => {
-                subscriber(state);
+                subscriber(newState);
             });
         }
     }

@@ -52,7 +52,10 @@ bus.publish({ type: 'B', payload: { by: 2 } });
 log('Publish action C.');
 bus.publish(new HBus.Action('C'));
 
-log('Current state:', bus.getState());
+const state0 = bus.getState();
+log('Current state:', state0);
 bus.requestState(state => {
     log('Current state: ', state);
 });
+
+log('------');
