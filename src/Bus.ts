@@ -41,9 +41,9 @@ export class Bus<S = any, T = any, P = any> {
     }
 
     private _update() {
-        const { processor, comparer, _state, _actions, _subscriberMap } = this,
-            oldState = _state;
-        let newState = _state instanceof Object ? Object.assign({}, _state) : _state,
+        const { processor, comparer, _state, _actions, _subscriberMap } = this;
+        // @ts-ignore
+        let newState = _state instanceof Object ? Object.create(_state) : _state,
             t;
         _actions.forEach(action => {
             t = processor(newState, action);
@@ -56,14 +56,14 @@ export class Bus<S = any, T = any, P = any> {
         let hasChanged = false;
         _subscriberMap.forEach((subscribers, propName) => {
             const prop = newState[propName];
-            if (!comparer(prop, oldState[propName])) {
+            if (!comparer(prop, _state[propName])) {
                 hasChanged = true;
                 subscribers.forEach(subscriber => {
                     subscriber(prop);
                 });
             }
         });
-        if (hasChanged || !comparer(oldState, newState)) {
+        if (hasChanged || !comparer(_state, newState)) {
             this._subscribers.forEach(subscriber => {
                 subscriber(newState);
             });

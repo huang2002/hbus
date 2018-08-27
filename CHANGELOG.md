@@ -1,3 +1,7 @@
+### 0.3.5 - 2018-08-27
+
+- Improve state handling
+
 ### 0.3.4 - 2018-08-17
 
 - Improve non-object payload handling
